@@ -1,9 +1,9 @@
-using System.Net;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using WeatherApp.Core.Models;
 using WeatherApp.Core.Services.Interfaces;
 using Xamarin.Essentials;
-using Location = WeatherApp.Core.Models.Location;
 
 namespace WeatherApp.Core.Services
 {
@@ -11,64 +11,161 @@ namespace WeatherApp.Core.Services
     {
         private readonly Key _key = new Key();
 
-        private async Task<ApiResult<Location>> RetrieveLocationKeyAsync(bool isCurrentLocation, string cityName)
+        private async Task<Tuple<double, double>> GetCurrentLocation()
         {
-            string url = null;
-            
-            if (isCurrentLocation)
+            try
             {
-                var request = new GeolocationRequest(GeolocationAccuracy.Medium);
-                var location = await Geolocation.GetLocationAsync(request);
+                var request = new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromSeconds(10));
+                var location = await Geolocation.GetLastKnownLocationAsync();
 
                 if (location == null)
                     return null;
-                
+
                 var latitude = location.Latitude;
                 var longitude = location.Longitude;
                 
-                url = "http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=" + _key.ApiKey + "&q=" + latitude + "," + longitude;
-
+                return new Tuple<double, double>(latitude, longitude);
             }
-
-            if (!string.IsNullOrWhiteSpace(cityName) && !isCurrentLocation)
+            catch
             {
-                url = "http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=" + _key.ApiKey + "&q=" + WebUtility.UrlEncode(cityName);
+                return null;
             }
-            
-            var apiResult = await RequestManager.Instance.GetApiAsync<Location>(url).ConfigureAwait(false);
-
-            return apiResult;
         }
         
-        public async Task<Result<Weather>> RetrieveCurrentWeatherAsync(bool isCurrentLocation, string  cityName = null)
+        public async Task<Result<CurrentWeather>> RetrieveCurrentWeatherAsync(bool isCelsius, string cityName)
         {
-            var location = RetrieveLocationKeyAsync(isCurrentLocation, cityName);
-            var locationKey = location.Result.SuccessResult.Key;
-            
-            var url = "http://dataservice.accuweather.com/currentconditions/v1/" + locationKey + ".json?apikey=" + _key.ApiKey;
+            string url;
 
-            var apiResult = await RequestManager.Instance.GetApiAsync<Weather>(url).ConfigureAwait(false);
-
-            if (apiResult != null)
+            if (string.IsNullOrWhiteSpace(cityName))
             {
-                return new Result<Weather>(apiResult.IsSuccess, apiResult.SuccessResult, apiResult.ErrorResult?.Code, apiResult.ErrorResult?.Message);
+                var (latitude, longitude) = GetCurrentLocation().Result;
+                
+                if(isCelsius)
+                    url = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&appid=" + _key.ApiKey;
+                else
+                {
+                    url = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=imperial&appid=" + _key.ApiKey;
+                }
+            }
+            else
+            {
+                if(isCelsius)
+                    url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&units=metric&appid=" + _key.ApiKey;
+                else
+                    url = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&units=imperial&appid=" + _key.ApiKey;
             }
             
-            return new Result<Weather>();
+            ApiResult<CurrentWeather> apiResult = await RequestManager.Instance.GetApiAsync<CurrentWeather>(url);
+
+            if (apiResult.SuccessResult != null)
+            {
+                return new Result<CurrentWeather>(apiResult.IsSuccess, apiResult.SuccessResult, apiResult.ErrorResult?.Code, apiResult.ErrorResult?.Message);
+            }
+            
+            return new Result<CurrentWeather>();
         }
 
-        public async Task<Result<CitySearch>> RetrieveListOfCitiesAsync(string citySearchText)
+        public async Task<Result<Forecasts>> RetrieveFiveDaysForecastsAsync(bool isCelsius, string cityName)
         {
-            var url = "https://api.teleport.org/api/cities/?search=" + WebUtility.UrlEncode(citySearchText);
+            string url;
 
-            var apiResult = await RequestManager.Instance.GetApiAsync<CitySearch>(url).ConfigureAwait(false);
-
-            if (apiResult != null)
+            if (string.IsNullOrWhiteSpace(cityName))
             {
-                return new Result<CitySearch>(apiResult.IsSuccess, apiResult.SuccessResult, apiResult.ErrorResult?.Code, apiResult.ErrorResult?.Message);
+                var (latitude, longitude) = GetCurrentLocation().Result;
+                
+                if(isCelsius)
+                    url = "https://api.openweathermap.org/data/2.5/forecast?lat=" + latitude + "&lon=" + longitude + "&units=metric&appid=" + _key.ApiKey;
+                else
+                {
+                    url = "https://api.openweathermap.org/data/2.5/forecast?lat=" + latitude + "&lon=" + longitude + "&units=imperial&appid=" + _key.ApiKey;
+                }
             }
+            else
+            {
+                if(isCelsius)
+                    url = "https://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&units=metric&appid=" + _key.ApiKey;
+                else
+                    url = "https://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&units=imperial&appid=" + _key.ApiKey;
+            }
+            
+            ApiResult<Forecasts> apiResult = await RequestManager.Instance.GetApiAsync<Forecasts>(url);
 
-            return new Result<CitySearch>();
+            if (apiResult.SuccessResult != null)
+            {
+                Dictionary<DateTime, List<Forecast>> fiveDayThreeHourForecastDic = new Dictionary<DateTime, List<Forecast>>(5);
+                foreach (var forecast in apiResult.SuccessResult.ForecastList)
+                {
+                    DateTime dateAndTime = DateTime.Parse(forecast.Date);
+
+                    var date = dateAndTime.Date;
+                    
+                    if (fiveDayThreeHourForecastDic.TryGetValue(date, out var forecasts))
+                    {
+                        fiveDayThreeHourForecastDic[date].Add(forecast);
+                    }
+                    else
+                    {
+                        forecasts = new List<Forecast> {forecast};
+                        fiveDayThreeHourForecastDic.Add(date, forecasts);
+                    }
+                }
+
+                Dictionary<DateTime, Forecast> fiveDayForecasts = new Dictionary<DateTime, Forecast>(5);
+
+                foreach (var key in fiveDayThreeHourForecastDic.Keys)
+                {
+                    List<Forecast> forecasts = fiveDayThreeHourForecastDic[key];
+
+                    double tempMin = 1000;
+                    double tempMax = -1000;
+                    
+                    foreach (var forecast in forecasts)
+                    {
+                        var forecastTempMin = forecast.Main.TempMin;
+                        var forecastTempMax = forecast.Main.TempMax;
+
+                        if (forecastTempMin < tempMin)
+                        {
+                            tempMin = forecastTempMin;
+                        }
+
+                        if (forecastTempMax > tempMax)
+                        {
+                            tempMax = forecastTempMax;
+                        }
+                    }
+
+                    Forecast newForecast = new Forecast
+                    {
+                        Main = new Main
+                        {
+                            TempMin = tempMin, 
+                            TempMax = tempMax
+                        }, 
+                        Date = key.ToShortDateString(), 
+                        Weather = null
+                    };
+                    
+                    fiveDayForecasts.Add(key, newForecast);
+                }
+
+                Forecasts newForecasts = new Forecasts();
+                List<Forecast> newForecastList = new List<Forecast>();
+                
+                foreach (var key in fiveDayForecasts.Keys)
+                {
+                    newForecastList.Add(fiveDayForecasts[key]);
+                }
+
+                newForecastList.RemoveAt(0);
+                
+                newForecasts.ForecastList = newForecastList;
+                apiResult.SuccessResult = newForecasts;
+
+                return new Result<Forecasts>(apiResult.IsSuccess, apiResult.SuccessResult, apiResult.ErrorResult?.Code, apiResult.ErrorResult?.Message);
+            }
+            
+            return new Result<Forecasts>();
         }
     }
 }

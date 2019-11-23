@@ -11,7 +11,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WeatherApp.Android</RootNamespace>
-    <AssemblyName>WeatherApp.Android</AssemblyName>
+    <AssemblyName>WeatherApp</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <AndroidApplication>True</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
@@ -47,7 +47,7 @@
     <WarningLevel>4</WarningLevel>
     <AndroidManagedSymbols>true</AndroidManagedSymbols>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
-    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+    <AndroidLinkMode>Full</AndroidLinkMode>
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
   </PropertyGroup>
   <ItemGroup>
@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Fragments\MenuFragment.cs" />
+    <Compile Include="LinkerPleaseInclude.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Setup.cs" />
@@ -80,8 +81,50 @@
   <ItemGroup>
     <AndroidResource Include="Resources\layout\detailsView.axml" />
     <AndroidResource Include="Resources\layout\homeView.axml" />
+    <AndroidResource Include="Resources\layout\item_name.axml" />
     <AndroidResource Include="Resources\layout\settingsView.axml" />
     <AndroidResource Include="Resources\layout\toolbar.axml" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\bg_gradient.xml">
+      <SubType>Designer</SubType>
+      <Generator>
+      </Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\humidity.png" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\info.png" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\pressure.png" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\sunrise.png" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\sunset.png" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\wind.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\humidity.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\info.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\pressure.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\sunrise.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\sunset.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\wind.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\humidity.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\info.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\pressure.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\sunrise.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\sunset.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\wind.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\humidity.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\info.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\pressure.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\sunrise.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\sunset.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\wind.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\humidity.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\info.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\pressure.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\sunrise.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\sunset.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\wind.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\humidity.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\info.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\pressure.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\sunrise.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\sunset.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\wind.png" />
     <AndroidResource Include="Resources\values\colors.xml" />
     <AndroidResource Include="Resources\values\ic_launcher_background.xml" />
     <AndroidResource Include="Resources\values\strings.xml" />
@@ -135,6 +178,9 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Acr.UserDialogs">
+      <Version>7.0.35</Version>
+    </PackageReference>
     <PackageReference Include="MvvmCross" Version="6.4.0" />
     <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Android.Support.Core.Utils" Version="28.0.0.3" />
@@ -289,6 +335,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Resources\Drawable" />
     <Folder Include="Resources\layout\" />
     <Folder Include="Resources\menu\" />
     <Folder Include="Activities\" />

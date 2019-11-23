@@ -1,23 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:local="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <include
         layout="@layout/toolbar" />
-    <TextView
+    <MvxSwipeRefreshLayout
+        android:id="@+id/refresher"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Home View" />
-    <Button 
-        android:layout_width="match_parent" 
-        android:layout_height="wrap_content" 
-        android:text="Get Data"
-        local:MvxBind="Click GetWeatherCommand" />
-    <TextView 
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        local:MvxBind="Text CurrentTemperatureLabel" />
-</LinearLayout>
+        android:layout_height="match_parent"
+        local:layout_behavior="@string/appbar_scrolling_view_behavior"
+        local:MvxBind="Refreshing IsRefreshing; RefreshCommand GetWeatherCommand">
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <EditText 
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" 
+                    local:MvxBind="Text CityName" />
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    local:MvxBind="Click GetWeatherCommand" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="40sp"
+                    local:MvxBind="Text CityCountryLabel" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="30sp"
+                    local:MvxBind="Text CurrentDateLabel" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="50sp"
+                    local:MvxBind="Text CurrentTemperatureLabel" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    local:MvxBind="Text CurrentWeatherForecast" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    local:MvxBind="Text SunriseLabel" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    local:MvxBind="Text SunsetLabel" />
+                <MvxRecyclerView
+                    android:id="@+id/forecast"
+                    android:scrollbars="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    local:MvxItemTemplate="@layout/item_name"
+                    local:MvxBind="ItemsSource FiveDaysForecast" />
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+    </MvxSwipeRefreshLayout>
+</android.support.design.widget.CoordinatorLayout>

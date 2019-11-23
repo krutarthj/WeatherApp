@@ -1,4 +1,5 @@
-﻿using Android.App;
+﻿using Acr.UserDialogs;
+using Android.App;
 using Android.OS;
 using Android.Content.PM;
 using Android.Support.V4.View;
@@ -29,6 +30,7 @@ namespace WeatherApp.Android.Activities
                 ViewModel.ShowMenu();
             
             Xamarin.Essentials.Platform.Init(this, bundle);
+            UserDialogs.Init(this);
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
