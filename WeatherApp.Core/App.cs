@@ -13,8 +13,7 @@ namespace WeatherApp.Core
                 .AsInterfaces()
                 .RegisterAsLazySingleton();
             
-            RegisterCustomAppStart<AppStart<HomeViewModel>>();
-            //RegisterAppStart<MainViewModel>();
+            RegisterAppStart<MainViewModel>();
         }
     }
 }

@@ -210,7 +210,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Fragments\BaseDialogFragment.cs" />
-    <Compile Include="Fragments\MenuFragment.cs" />
     <Compile Include="LinkerPleaseInclude.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -233,7 +232,7 @@
     <AndroidResource Include="Resources\anim\slide_up.xml" />
     <AndroidResource Include="Resources\layout\locationsView.axml" />
     <AndroidResource Include="Resources\layout\homeView.axml" />
-    <AndroidResource Include="Resources\layout\item_name.axml" />
+    <AndroidResource Include="Resources\layout\forecast_info.axml" />
     <AndroidResource Include="Resources\layout\location_view.axml" />
     <AndroidResource Include="Resources\layout\settingsView.axml" />
     <AndroidResource Include="Resources\layout\toolbar.axml" />
@@ -563,24 +562,6 @@
       <Generator>
       </Generator>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\fragment_navigation.axml">
-      <SubType>
-      </SubType>
-      <Generator>
-      </Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\menu\menu_navigation.axml">
-      <SubType>
-      </SubType>
-      <Generator>
-      </Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\menu\navigation_drawer.axml">
-      <SubType>
-      </SubType>
-      <Generator>
-      </Generator>
-    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WeatherApp.Core\WeatherApp.Core.csproj">
@@ -590,7 +571,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\layout\" />
-    <Folder Include="Resources\menu\" />
     <Folder Include="Activities\" />
     <Folder Include="Fragments\" />
   </ItemGroup>

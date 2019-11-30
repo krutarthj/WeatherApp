@@ -312,12 +312,12 @@ namespace WeatherApp.Core.ViewModels
             _weatherService = Mvx.IoCProvider.Resolve<IWeatherService>();
         }
 
-        /*public override async Task Initialize()
+        public override async Task Initialize()
         {
             await base.Initialize();
-            
-            //await GetWeather();
-        }*/
+
+            await GetWeather();
+        }
 
         private async Task GetWeather()
         {
@@ -327,10 +327,7 @@ namespace WeatherApp.Core.ViewModels
             {
                 IsCurrentLocation = false;
             }
-
-            //var result = await _weatherService.RetrieveCurrentWeatherAsync(IsSettingCelsius, CityName);
-            //var forecast = await _weatherService.RetrieveFiveDaysForecastsAsync(IsSettingCelsius, CityName);
-
+            
             var result = await _weatherService.RetrieveWeatherAndForecast(IsSettingCelsius, CityName);
 
             if (result.Value == null)

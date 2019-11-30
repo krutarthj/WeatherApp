@@ -8,7 +8,6 @@ namespace WeatherApp.Core.ViewModels
     {
         public void ShowMenu()
         {
-            Mvx.IoCProvider.Resolve<IMvxNavigationService>().Navigate<MenuViewModel>();
             Mvx.IoCProvider.Resolve<IMvxNavigationService>().Navigate<HomeViewModel>();
         }
     }

@@ -1,10 +1,8 @@
-﻿using System;
-using Android.Graphics;
+﻿using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using MvvmCross.Droid.Support.V7.RecyclerView;
 using MvvmCross.Platforms.Android.Presenters.Attributes;
 using WeatherApp.Core.ViewModels;
 
@@ -15,9 +13,6 @@ namespace WeatherApp.Android.Fragments
     public class LocationsFragment : BaseDialogFragment<LocationsViewModel>
     {
         private SearchView _searchView;
-        private ImageView _closeButton;
-        private MvxRecyclerView _locationsRecyclerView;
-        private LinearLayout _rootView;
         
         protected override int FragmentId => Resource.Layout.locationsView;
 
@@ -39,10 +34,7 @@ namespace WeatherApp.Android.Fragments
         {
             var view = base.OnCreateView(inflater, container, savedInstanceState);
 
-            _rootView = view.FindViewById<LinearLayout>(Resource.Id.rootView);
             _searchView = view.FindViewById<SearchView>(Resource.Id.searchLocation);
-            _closeButton = view.FindViewById<ImageView>(Resource.Id.closeButton);
-            _locationsRecyclerView = view.FindViewById<MvxRecyclerView>(Resource.Id.locations);
 
             SetSearchViewColors();
             

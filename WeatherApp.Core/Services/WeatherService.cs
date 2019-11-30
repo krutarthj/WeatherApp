@@ -20,18 +20,24 @@ namespace WeatherApp.Core.Services
 
         public async Task<Result<CurrentWeatherWithForecast>> RetrieveWeatherAndForecast(bool isCelsius, string cityName)
         {
-            var getLocation = await _locationService.GetCurrentLocationAsync();
-
-            if (!getLocation.IsSuccess || getLocation.Value == null)
+            double? latitude = null;
+            double? longitude = null;
+            if (string.IsNullOrWhiteSpace(cityName))
             {
-                return new Result<CurrentWeatherWithForecast>(false, null, null, getLocation.ErrorMessage);
+                var getLocation = await _locationService.GetCurrentLocationAsync();
+
+                if (!getLocation.IsSuccess || getLocation.Value == null)
+                {
+                    return new Result<CurrentWeatherWithForecast>(false, null, null, getLocation.ErrorMessage);
+                }
+
+                latitude = getLocation.Value.Latitude;
+                longitude = getLocation.Value.Longitude;
             }
+            
 
-            var latitude = getLocation.Value.Latitude;
-            var longitude = getLocation.Value.Longitude;
-
-            var currentWeather = await RetrieveCurrentWeatherAsync(latitude, longitude, isCelsius, cityName);
-            var forecast = await RetrieveFiveDaysForecastsAsync(latitude, longitude, isCelsius, cityName);
+            var currentWeather = await RetrieveCurrentWeatherAsync(isCelsius, cityName, latitude, longitude);
+            var forecast = await RetrieveFiveDaysForecastsAsync(isCelsius, cityName, latitude, longitude);
 
             var weatherAndForecast = new CurrentWeatherWithForecast();
 
@@ -44,7 +50,7 @@ namespace WeatherApp.Core.Services
             return new Result<CurrentWeatherWithForecast>(true, weatherAndForecast, null, null);
         }
         
-        private async Task<Result<CurrentWeather>> RetrieveCurrentWeatherAsync(double latitude, double longitude, bool isCelsius, string cityName)
+        private async Task<Result<CurrentWeather>> RetrieveCurrentWeatherAsync(bool isCelsius, string cityName, double? latitude = null, double? longitude = null)
         {
             string url;
 
@@ -75,7 +81,7 @@ namespace WeatherApp.Core.Services
             return new Result<CurrentWeather>();
         }
 
-        private async Task<Result<Forecasts>> RetrieveFiveDaysForecastsAsync(double latitude, double longitude, bool isCelsius, string cityName)
+        private async Task<Result<Forecasts>> RetrieveFiveDaysForecastsAsync(bool isCelsius, string cityName, double? latitude = null, double? longitude = null)
         {
             string url;
 
