@@ -2,6 +2,7 @@
 using Android.Runtime;
 using Android.Support.V7.Widget;
 using Android.Views;
+using MvvmCross.Droid.Support.V4;
 using MvvmCross.Droid.Support.V7.RecyclerView;
 using MvvmCross.Platforms.Android.Presenters.Attributes;
 using WeatherApp.Core.ViewModels;
@@ -12,6 +13,8 @@ namespace WeatherApp.Android.Fragments
     [Register("weatherapp.android.fragments.HomeFragment")]
     public class HomeFragment : BaseFragment<HomeViewModel>
     {
+        private MvxSwipeRefreshLayout swipeRefreshLayout;
+
         protected override int FragmentId => Resource.Layout.homeView;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -21,7 +24,12 @@ namespace WeatherApp.Android.Fragments
             var recyclerView = view.FindViewById<MvxRecyclerView>(Resource.Id.forecast);
             recyclerView.NestedScrollingEnabled = false;
 
+            swipeRefreshLayout = view.FindViewById<MvxSwipeRefreshLayout>(Resource.Id.refresher);
+            swipeRefreshLayout.RefreshCommand.Execute(null);
+
             return view;
         }
+
+        private void Refresh_swipe(object sender, )
     }
 }

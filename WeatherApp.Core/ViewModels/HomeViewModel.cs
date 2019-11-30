@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Acr.UserDialogs;
 using MvvmCross;
@@ -255,6 +254,7 @@ namespace WeatherApp.Core.ViewModels
             get => _windSpeed;
             set
             {
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
                 if (_windSpeed == value)
                     return;
                 
@@ -312,21 +312,11 @@ namespace WeatherApp.Core.ViewModels
             _weatherService = Mvx.IoCProvider.Resolve<IWeatherService>();
         }
 
-        public override async Task Initialize()
+        /*public override async Task Initialize()
         {
             await base.Initialize();
             
-            await GetWeather();
-        }
-
-        private bool FirstTimeLoading { get; set; } = true;
-        
-        /*public override async void ViewAppearing()
-        {
-            base.ViewAppearing();
-
-            if(FirstTimeLoading)
-                await GetWeather();
+            //await GetWeather();
         }*/
 
         private async Task GetWeather()
@@ -338,55 +328,59 @@ namespace WeatherApp.Core.ViewModels
                 IsCurrentLocation = false;
             }
 
-            var result = await _weatherService.RetrieveCurrentWeatherAsync(IsSettingCelsius, CityName);
-            var forecast = await _weatherService.RetrieveFiveDaysForecastsAsync(IsSettingCelsius, CityName);
+            //var result = await _weatherService.RetrieveCurrentWeatherAsync(IsSettingCelsius, CityName);
+            //var forecast = await _weatherService.RetrieveFiveDaysForecastsAsync(IsSettingCelsius, CityName);
+
+            var result = await _weatherService.RetrieveWeatherAndForecast(IsSettingCelsius, CityName);
 
             if (result.Value == null)
             {
                 if (result.ErrorMessage != null)
                 {
-                    await UserDialogs.Instance.AlertAsync(result.ErrorMessage);
+                    AlertConfig alertConfig = new AlertConfig
+                    {
+                        Title = "Error",
+                        Message = result.ErrorMessage
+                    };
+
+                    UserDialogs.Instance.Alert(alertConfig);
                     IsRefreshing = false;
                     return;
                 }
                 
-                await UserDialogs.Instance.AlertAsync("Please search in format: \n CityName, CountryCode. \n For example, Newark, US");
                 IsRefreshing = false;
                 return;
             }
             
-            if (result.Value != null)
+            if (result.Value.CurrentWeather != null)
             {
-                CurrentCityName = result.Value.Name;
-                CountryName = result.Value.Sys.Country;
-                CurrentTemperature = result.Value.Main.Temp;
-                CurrentTemperatureDescription = result.Value.Weather[0].Main;
-                MaximumTemperature = Convert.ToInt32(result.Value.Main.TempMax);
-                MinimumTemperature = Convert.ToInt32(result.Value.Main.TempMin);
-                CurrentCondition = result.Value.Weather[0].Main;
+                CurrentCityName = result.Value.CurrentWeather.Name;
+                CountryName = result.Value.CurrentWeather.Sys.Country;
+                CurrentTemperature = result.Value.CurrentWeather.Main.Temp;
+                CurrentTemperatureDescription = result.Value.CurrentWeather.Weather[0].Main;
+                MaximumTemperature = Convert.ToInt32(result.Value.CurrentWeather.Main.TempMax);
+                MinimumTemperature = Convert.ToInt32(result.Value.CurrentWeather.Main.TempMin);
+                CurrentCondition = result.Value.CurrentWeather.Weather[0].Main;
                 
-                WindSpeed = result.Value.Wind.Speed;
-                Pressure = result.Value.Main.Pressure;
-                Humidity = result.Value.Main.Humidity;
-                Cloud = result.Value.Clouds.All;
+                WindSpeed = result.Value.CurrentWeather.Wind.Speed;
+                Pressure = result.Value.CurrentWeather.Main.Pressure;
+                Humidity = result.Value.CurrentWeather.Main.Humidity;
+                Cloud = result.Value.CurrentWeather.Clouds.All;
 
-                var timezone = result.Value.Timezone;
-                var sunriseUnixTimestamp = result.Value.Sys.Sunrise + timezone;
-                var sunsetUnixTimestamp = result.Value.Sys.Sunset + timezone;
+                var timezone = result.Value.CurrentWeather.Timezone;
+                var sunriseUnixTimestamp = result.Value.CurrentWeather.Sys.Sunrise + timezone;
+                var sunsetUnixTimestamp = result.Value.CurrentWeather.Sys.Sunset + timezone;
 
                 Sunrise = UnixTimeStampToDateTime(sunriseUnixTimestamp);
                 Sunset = UnixTimeStampToDateTime(sunsetUnixTimestamp);
             }
 
-            if (forecast.Value != null)
+            if (result.Value.Forecast != null)
             {
-                List<DailyForecastViewModel> dailyForecastViewModels = ConvertDailyForecastsToViewModel(forecast.Value.ForecastList);
+                List<DailyForecastViewModel> dailyForecastViewModels = ConvertDailyForecastsToViewModel(result.Value.Forecast.ForecastList);
                 FiveDaysForecast.Refresh(dailyForecastViewModels);
             }
 
-            if (FirstTimeLoading)
-                FirstTimeLoading = false;
-            
             IsRefreshing = false;
         }
 

@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
-using Plugin.Geolocator;
-using Plugin.Geolocator.Abstractions;
 using WeatherApp.Core.Models;
 using WeatherApp.Core.Services.Interfaces;
 using Xamarin.Essentials;
@@ -14,7 +11,7 @@ namespace WeatherApp.Core.Services
 {
     public class LocationService : ILocationService
     {
-        public async Task GetLocationAsync()
+        public async Task<Result<Coordinates>> GetCurrentLocationAsync()
         {
             try
             {
@@ -23,27 +20,35 @@ namespace WeatherApp.Core.Services
 
                 if (location != null)
                 {
-                    Console.WriteLine($"Latitude: {location.Latitude}, Longitude: {location.Longitude}, Altitude: {location.Altitude}");
+                    Coordinates coordinates = new Coordinates
+                    {
+                        Latitude = location.Latitude,
+                        Longitude = location.Longitude
+                    };
+
+                    return new Result<Coordinates>(true, coordinates, null, null);
                 }
+
+                return new Result<Coordinates>(false, null, null, "Something went wrong. Please try again.");
             }
             catch (FeatureNotSupportedException fnsEx)
             {
-                // Handle not supported on device exception
+                return new Result<Coordinates>(false, null, null, fnsEx.Message);
             }
             catch (FeatureNotEnabledException fneEx)
             {
-                // Handle not enabled on device exception
+                return new Result<Coordinates>(false, null, null, fneEx.Message);
             }
             catch (PermissionException pEx)
             {
-                // Handle permission exception
+                return new Result<Coordinates>(false, null, null, pEx.Message);
             }
             catch (Exception ex)
             {
-                // Unable to get location
+                return new Result<Coordinates>(true, null, null, ex.Message);
             }
         }
-        
+
         public async Task<Result<Location>> GetLocationAsync(string search)
         {
             var url = "https://api.teleport.org/api/cities/?search=" + WebUtility.UrlEncode(search);

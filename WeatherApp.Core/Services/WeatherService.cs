@@ -5,63 +5,52 @@ using System.Threading.Tasks;
 using MvvmCross;
 using WeatherApp.Core.Models;
 using WeatherApp.Core.Services.Interfaces;
-using Xamarin.Essentials;
 
 namespace WeatherApp.Core.Services
 {
     public class WeatherService : IWeatherService
     {
         private readonly ILocationService _locationService;
+        private readonly Key _key = new Key();
 
         public WeatherService()
         {
             _locationService = Mvx.IoCProvider.Resolve<ILocationService>();
         }
-        
-        private readonly Key _key = new Key();
 
-        private async Task<Tuple<double, double>> GetCurrentLocation()
+        public async Task<Result<CurrentWeatherWithForecast>> RetrieveWeatherAndForecast(bool isCelsius, string cityName)
         {
-            try
+            var getLocation = await _locationService.GetCurrentLocationAsync();
+
+            if (!getLocation.IsSuccess || getLocation.Value == null)
             {
-                var request = new GeolocationRequest(GeolocationAccuracy.Lowest, TimeSpan.FromSeconds(10));
-                var location = await Geolocation.GetLastKnownLocationAsync();
-
-                if (location == null)
-                    return null;
-
-                var latitude = location.Latitude;
-                var longitude = location.Longitude;
-
-                return new Tuple<double, double>(latitude, longitude);
+                return new Result<CurrentWeatherWithForecast>(false, null, null, getLocation.ErrorMessage);
             }
-            catch
+
+            var latitude = getLocation.Value.Latitude;
+            var longitude = getLocation.Value.Longitude;
+
+            var currentWeather = await RetrieveCurrentWeatherAsync(latitude, longitude, isCelsius, cityName);
+            var forecast = await RetrieveFiveDaysForecastsAsync(latitude, longitude, isCelsius, cityName);
+
+            var weatherAndForecast = new CurrentWeatherWithForecast();
+
+            if(currentWeather.Value != null && forecast.Value != null)
             {
-                return null;
+                weatherAndForecast.CurrentWeather = currentWeather.Value;
+                weatherAndForecast.Forecast = forecast.Value;
             }
+
+            return new Result<CurrentWeatherWithForecast>(true, weatherAndForecast, null, null);
         }
         
-        public async Task<Result<CurrentWeather>> RetrieveCurrentWeatherAsync(bool isCelsius, string cityName)
+        private async Task<Result<CurrentWeather>> RetrieveCurrentWeatherAsync(double latitude, double longitude, bool isCelsius, string cityName)
         {
             string url;
 
             if (string.IsNullOrWhiteSpace(cityName))
             {
-                var test = _locationService.GetLocationAsync();
-
-                var getLocation = GetCurrentLocation();
-                
-                if (getLocation.Result == null)
-                {
-                    return new Result<CurrentWeather>(false, null, null, "Please enable device location or give location permission to our app");
-                }
-                
-                var (latitude, longitude) = getLocation.Result;
-
-                //var latitude = getLocation.Result.Latitude;
-                //var longitude = getLocation.Result.Longitude;
-                
-                if(isCelsius)
+                if (isCelsius)
                     url = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&appid=" + _key.ApiKey;
                 else
                 {
@@ -86,27 +75,13 @@ namespace WeatherApp.Core.Services
             return new Result<CurrentWeather>();
         }
 
-        public async Task<Result<Forecasts>> RetrieveFiveDaysForecastsAsync(bool isCelsius, string cityName)
+        private async Task<Result<Forecasts>> RetrieveFiveDaysForecastsAsync(double latitude, double longitude, bool isCelsius, string cityName)
         {
             string url;
 
             if (string.IsNullOrWhiteSpace(cityName))
             {
-                var getLocation = GetCurrentLocation();
-                
-                //var getLocation = _locationService.GetCurrentPosition();
-                
-                if (getLocation.Result == null)
-                {
-                    return new Result<Forecasts>(false, null, null, "Please enable device location or give location permission to our app");
-                }
-                
-                var (latitude, longitude) = getLocation.Result;
-
-                //var latitude = getLocation.Result.Latitude;
-                //var longitude = getLocation.Result.Longitude;
-                
-                if(isCelsius)
+                if (isCelsius)
                     url = "https://api.openweathermap.org/data/2.5/forecast?lat=" + latitude + "&lon=" + longitude + "&units=metric&appid=" + _key.ApiKey;
                 else
                 {

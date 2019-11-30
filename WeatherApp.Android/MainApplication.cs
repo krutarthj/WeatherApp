@@ -1,8 +1,8 @@
 ﻿using System;
+using Acr.UserDialogs;
 using Android.App;
 using Android.Runtime;
 using MvvmCross.Droid.Support.V7.AppCompat;
-using Plugin.CurrentActivity;
 using WeatherApp.Core;
 
 namespace WeatherApp.Android
@@ -22,7 +22,8 @@ namespace WeatherApp.Android
         public override void OnCreate()
         {
             base.OnCreate();
-            CrossCurrentActivity.Current.Init(this);
+            Xamarin.Essentials.Platform.Init(this);
+            UserDialogs.Init(this);
         }
     }
 }

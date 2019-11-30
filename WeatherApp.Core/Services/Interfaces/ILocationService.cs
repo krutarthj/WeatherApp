@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Plugin.Geolocator.Abstractions;
 using WeatherApp.Core.Models;
 
 namespace WeatherApp.Core.Services.Interfaces
@@ -9,6 +8,6 @@ namespace WeatherApp.Core.Services.Interfaces
     {
         Task<Result<Location>> GetLocationAsync(string search);
         Task<Result<List<Country>>> GetCountryAsync(string countrySearch);
-        Task GetLocationAsync();
+        Task<Result<Coordinates>> GetCurrentLocationAsync();
     }
 }
