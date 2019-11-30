@@ -17,11 +17,12 @@ namespace WeatherApp.Android.Activities
     public class MainView : MvxAppCompatActivity<MainViewModel>
     {
         public DrawerLayout DrawerLayout;
-        
+
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
-            
+            Xamarin.Essentials.Platform.Init(this, bundle);
+
             SetContentView(Resource.Layout.main);
 
             DrawerLayout = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
@@ -29,13 +30,13 @@ namespace WeatherApp.Android.Activities
             if(bundle == null)
                 ViewModel.ShowMenu();
             
-            Xamarin.Essentials.Platform.Init(this, bundle);
             UserDialogs.Init(this);
         }
-
+        
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 

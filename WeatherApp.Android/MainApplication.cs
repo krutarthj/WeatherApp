@@ -2,6 +2,7 @@
 using Android.App;
 using Android.Runtime;
 using MvvmCross.Droid.Support.V7.AppCompat;
+using Plugin.CurrentActivity;
 using WeatherApp.Core;
 
 namespace WeatherApp.Android
@@ -16,6 +17,12 @@ namespace WeatherApp.Android
         public MainApplication(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
         {
             
+        }
+
+        public override void OnCreate()
+        {
+            base.OnCreate();
+            CrossCurrentActivity.Current.Init(this);
         }
     }
 }

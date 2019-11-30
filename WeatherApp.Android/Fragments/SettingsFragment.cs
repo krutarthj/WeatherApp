@@ -6,17 +6,31 @@ using WeatherApp.Core.ViewModels;
 
 namespace WeatherApp.Android.Fragments
 {
-    [MvxFragmentPresentation(typeof(MainViewModel), Resource.Id.content_frame, true)]
+    [MvxDialogFragmentPresentation]
     [Register("weatherapp.android.fragments.SettingsFragment")]
-    public class SettingsFragment : BaseFragment<SettingsViewModel>
+    public class SettingsFragment : BaseDialogFragment<SettingsViewModel>
     {
         protected override int FragmentId => Resource.Layout.settingsView;
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public override void OnCreate(Bundle savedInstanceState)
         {
-            ShowHamburgerMenu = true;
+            base.OnCreate(savedInstanceState);
             
-            return base.OnCreateView(inflater, container, savedInstanceState);
+            SetStyle(StyleNormal, Resource.Style.FullScreenDialogTheme);
+        }
+        
+        public override void OnActivityCreated(Bundle savedInstanceState)
+        {
+            base.OnActivityCreated(savedInstanceState);
+            
+            Dialog.Window.SetWindowAnimations(Resource.Style.DialogAnimation);
+        }
+        
+        public override void OnStart()
+        {
+            base.OnStart();
+            
+            Dialog?.Window.SetLayout(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
         }
     }
 }

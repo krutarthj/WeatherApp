@@ -6,11 +6,27 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:editTextColor">@android:color/white</item>
     </style>
 
     <style name="MenuTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">#673AB7</item>
         <item name="colorPrimaryDark">#512DA8</item>
         <item name="colorAccent">#00BCD4</item>
+    </style>
+    
+    <style name="FullScreenDialogTheme" parent="AppTheme">
+        <item name="android:windowIsFloating">false</item>
+    </style>
+    
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_down</item>
+    </style>
+    
+    <style name="FlatButton" parent="Theme.AppCompat.Light">
+        <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Borderless.Colored</item>
+        <item name="android:colorControlHighlight">#004ba0</item>
+        <item name="android:colorAccent">#2196F3</item>
     </style>
 </resources>

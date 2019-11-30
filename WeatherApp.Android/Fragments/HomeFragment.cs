@@ -1,5 +1,6 @@
 ﻿using Android.OS;
 using Android.Runtime;
+using Android.Support.V7.Widget;
 using Android.Views;
 using MvvmCross.Droid.Support.V7.RecyclerView;
 using MvvmCross.Platforms.Android.Presenters.Attributes;
@@ -15,8 +16,6 @@ namespace WeatherApp.Android.Fragments
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            ShowHamburgerMenu = true;
-
             var view = base.OnCreateView(inflater, container, savedInstanceState);
 
             var recyclerView = view.FindViewById<MvxRecyclerView>(Resource.Id.forecast);

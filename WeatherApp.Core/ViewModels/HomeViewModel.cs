@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Acr.UserDialogs;
 using MvvmCross;
 using MvvmCross.Commands;
+using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
 using WeatherApp.Core.Models;
 using WeatherApp.Core.Services.Interfaces;
@@ -15,6 +16,20 @@ namespace WeatherApp.Core.ViewModels
     public class HomeViewModel : BaseViewModel
     {
         private readonly IWeatherService _weatherService;
+
+        private string _currentCondition;
+        public string CurrentCondition
+        {
+            get => _currentCondition;
+            set
+            {
+                if (_currentCondition == value)
+                    return;
+                
+                _currentCondition = value;
+                RaisePropertyChanged(nameof(CurrentCondition));
+            }
+        }
 
         private DateTime _sunrise;
         public DateTime Sunrise
@@ -142,7 +157,7 @@ namespace WeatherApp.Core.ViewModels
                     return;
 
                 _minimumTemperature = value;
-                RaisePropertyChanged(nameof(MaximumTemperature));
+                RaisePropertyChanged(nameof(MinimumTemperature));
                 RaisePropertyChanged(nameof(CurrentWeatherForecast));
             }
         }
@@ -158,7 +173,6 @@ namespace WeatherApp.Core.ViewModels
 
                 _currentCityName = value;
                 RaisePropertyChanged(nameof(CurrentCityName));
-                RaisePropertyChanged(nameof(CityCountryLabel));
             }
         }
         
@@ -173,24 +187,112 @@ namespace WeatherApp.Core.ViewModels
 
                 _countryName = value;
                 RaisePropertyChanged(nameof(CountryName));
-                RaisePropertyChanged(nameof(CityCountryLabel));
+            }
+        }
+
+        private string _currentTemperatureDescription;
+        public string CurrentTemperatureDescription
+        {
+            get => _currentTemperatureDescription;
+            set
+            {
+                if (_currentTemperatureDescription == value)
+                    return;
+
+                _currentTemperatureDescription = value;
+                RaisePropertyChanged(nameof(CurrentTemperatureDescription));
+            }
+        }
+
+        private int _pressure;
+        public int Pressure
+        {
+            get => _pressure;
+            set
+            {
+                if (_pressure == value)
+                    return;
+                
+                _pressure = value;
+                RaisePropertyChanged(nameof(Pressure));
+                RaisePropertyChanged(nameof(PressureLabel));
+            }
+        }
+        
+        private int _humidity;
+        public int Humidity
+        {
+            get => _humidity;
+            set
+            {
+                if (_humidity == value)
+                    return;
+                
+                _humidity = value;
+                RaisePropertyChanged(nameof(Humidity));
+                RaisePropertyChanged(nameof(HumidityLabel));
+            }
+        }
+
+        private int _cloud;
+        public int Cloud
+        {
+            get => _cloud;
+            set
+            {
+                if (_cloud == value)
+                    return;
+                
+                _cloud = value;
+                RaisePropertyChanged(nameof(Cloud));
+                RaisePropertyChanged(nameof(CloudinessLabel));
+            }
+        }
+
+        private double _windSpeed;
+        public double WindSpeed
+        {
+            get => _windSpeed;
+            set
+            {
+                if (_windSpeed == value)
+                    return;
+                
+                _windSpeed = value;
+                RaisePropertyChanged(nameof(WindSpeed));
+                RaisePropertyChanged(nameof(WindSpeedLabel));
             }
         }
 
         public string CurrentDateLabel => DateTime.Now.ToString("dddd");
         
-        public string CityCountryLabel => CurrentCityName + ", " + CountryName;
-
         public string CurrentWeatherForecast => MaximumTemperature + "/" + MinimumTemperature;
 
         public string SunriseLabel => Sunrise.ToString("t");
         public string SunsetLabel => Sunset.ToString("t");
+
+        public string HumidityLabel => Humidity + "%";
+        
+        public string CloudinessLabel => Cloud + "%";
+
+        public string PressureLabel => Pressure + " hPa";
+
+        public string WindSpeedLabel
+        {
+            get
+            {
+                if (IsSettingCelsius)
+                    return WindSpeed + " m/s";
+
+                return WindSpeed + " mph";
+            }
+        }
         
         public string CurrentTemperatureLabel
         {
             get
             {
-                if(IsSettingCelsius)
+                if (IsSettingCelsius)
                     return Convert.ToInt32(CurrentTemperature) + "°C";
                 
                 return Convert.ToInt32(CurrentTemperature) + "°F";
@@ -200,6 +302,8 @@ namespace WeatherApp.Core.ViewModels
         public MvxObservableCollection<DailyForecastViewModel> FiveDaysForecast { get; set; }
         
         public IMvxCommand GetWeatherCommand => new MvxAsyncCommand(GetWeather);
+        public IMvxCommand GetLocationCommand => new MvxAsyncCommand(GetLocation);
+        public IMvxCommand OpenSettingsCommand => new MvxAsyncCommand(OpenSettings);
         
         public HomeViewModel()
         {
@@ -210,37 +314,42 @@ namespace WeatherApp.Core.ViewModels
 
         public override async Task Initialize()
         {
+            await base.Initialize();
+            
             await GetWeather();
         }
+
+        private bool FirstTimeLoading { get; set; } = true;
+        
+        /*public override async void ViewAppearing()
+        {
+            base.ViewAppearing();
+
+            if(FirstTimeLoading)
+                await GetWeather();
+        }*/
 
         private async Task GetWeather()
         {
             IsRefreshing = true;
 
-            string city = null;
-            
             if (CityName != null)
             {
-                city = CityName;
-                if (!city.Contains(","))
+                IsCurrentLocation = false;
+            }
+
+            var result = await _weatherService.RetrieveCurrentWeatherAsync(IsSettingCelsius, CityName);
+            var forecast = await _weatherService.RetrieveFiveDaysForecastsAsync(IsSettingCelsius, CityName);
+
+            if (result.Value == null)
+            {
+                if (result.ErrorMessage != null)
                 {
-                    await UserDialogs.Instance.AlertAsync("Please search in format: CityName, CountryCode. For example, Newark, US");
+                    await UserDialogs.Instance.AlertAsync(result.ErrorMessage);
                     IsRefreshing = false;
                     return;
                 }
-
-                if (city.Contains(",USA") || city.Contains(",usa"))
-                {
-                    List<string> words = city.Split(',').ToList();
-                    city = words[0] + ",us";
-                }
-            }
-
-            var result = await _weatherService.RetrieveCurrentWeatherAsync(IsSettingCelsius, city);
-            var forecast = await _weatherService.RetrieveFiveDaysForecastsAsync(IsSettingCelsius, city);
-
-            if (result == null)
-            {
+                
                 await UserDialogs.Instance.AlertAsync("Please search in format: \n CityName, CountryCode. \n For example, Newark, US");
                 IsRefreshing = false;
                 return;
@@ -251,11 +360,22 @@ namespace WeatherApp.Core.ViewModels
                 CurrentCityName = result.Value.Name;
                 CountryName = result.Value.Sys.Country;
                 CurrentTemperature = result.Value.Main.Temp;
+                CurrentTemperatureDescription = result.Value.Weather[0].Main;
                 MaximumTemperature = Convert.ToInt32(result.Value.Main.TempMax);
                 MinimumTemperature = Convert.ToInt32(result.Value.Main.TempMin);
+                CurrentCondition = result.Value.Weather[0].Main;
+                
+                WindSpeed = result.Value.Wind.Speed;
+                Pressure = result.Value.Main.Pressure;
+                Humidity = result.Value.Main.Humidity;
+                Cloud = result.Value.Clouds.All;
 
-                Sunrise = UnixTimeStampToDateTime(result.Value.Sys.Sunrise);
-                Sunset = UnixTimeStampToDateTime(result.Value.Sys.Sunset);
+                var timezone = result.Value.Timezone;
+                var sunriseUnixTimestamp = result.Value.Sys.Sunrise + timezone;
+                var sunsetUnixTimestamp = result.Value.Sys.Sunset + timezone;
+
+                Sunrise = UnixTimeStampToDateTime(sunriseUnixTimestamp);
+                Sunset = UnixTimeStampToDateTime(sunsetUnixTimestamp);
             }
 
             if (forecast.Value != null)
@@ -263,10 +383,49 @@ namespace WeatherApp.Core.ViewModels
                 List<DailyForecastViewModel> dailyForecastViewModels = ConvertDailyForecastsToViewModel(forecast.Value.ForecastList);
                 FiveDaysForecast.Refresh(dailyForecastViewModels);
             }
+
+            if (FirstTimeLoading)
+                FirstTimeLoading = false;
             
             IsRefreshing = false;
         }
 
+        private async Task GetLocation()
+        {
+            var result = await Mvx.IoCProvider.Resolve<IMvxNavigationService>().Navigate<LocationsViewModel, NavigationParameters>();
+
+            if (result != null)
+            {
+                CityName = result.CityAndCountryName;
+                await GetWeather();
+            }
+        }
+
+        private async Task OpenSettings()
+        {
+            var parameters = new NavigationParameters
+            {
+                IsCelsius = IsSettingCelsius,
+                IsCurrentLocationRequest = IsCurrentLocation
+            };
+            
+            var result = await Mvx.IoCProvider.Resolve<IMvxNavigationService>().Navigate<SettingsViewModel, NavigationParameters, NavigationParameters>(parameters);
+
+            if (result != null)
+            {
+                IsSettingCelsius = result.IsCelsius;
+
+                if (CityName != null && result.IsCurrentLocationRequest)
+                {
+                    IsCurrentLocation = result.IsCurrentLocationRequest;
+
+                    CityName = null;
+                }
+                
+                await GetWeather();
+            }
+        }
+        
         private static List<DailyForecastViewModel> ConvertDailyForecastsToViewModel(List<Forecast> forecasts)
         {
             if (forecasts == null)
@@ -290,8 +449,9 @@ namespace WeatherApp.Core.ViewModels
 
             var dailyForecast = new DailyForecastViewModel
             {
-                MaximumTemperature = forecast.Main.TempMax,
-                MinimumTemperature = forecast.Main.TempMin
+                MaximumTemperature = Convert.ToInt32(forecast.Main.TempMax),
+                MinimumTemperature = Convert.ToInt32(forecast.Main.TempMin),
+                DayOfWeek = forecast.Date
             };
 
             return dailyForecast;
@@ -300,8 +460,8 @@ namespace WeatherApp.Core.ViewModels
         private static DateTime UnixTimeStampToDateTime( double unixTimeStamp )
         {
             // Unix timestamp is seconds past epoch
-            DateTime dtDateTime = new DateTime(1970,1,1,0,0,0,0,DateTimeKind.Utc);
-            dtDateTime = dtDateTime.AddSeconds( unixTimeStamp ).ToLocalTime();
+            DateTime dtDateTime = new DateTime(1970,1,1,0,0,0,0);
+            dtDateTime = dtDateTime.AddSeconds(unixTimeStamp);
             return dtDateTime;
         }
     }

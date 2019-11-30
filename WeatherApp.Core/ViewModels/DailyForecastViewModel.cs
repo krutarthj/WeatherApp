@@ -1,11 +1,9 @@
-using System;
-
 namespace WeatherApp.Core.ViewModels
 {
     public class DailyForecastViewModel : BaseViewModel
     {
-        private double _maximumTemperature;
-        public double MaximumTemperature
+        private int _maximumTemperature;
+        public int MaximumTemperature
         {
             get => _maximumTemperature;
             set
@@ -18,8 +16,8 @@ namespace WeatherApp.Core.ViewModels
             }
         }
         
-        private double _minimumTemperature;
-        public double MinimumTemperature
+        private int _minimumTemperature;
+        public int MinimumTemperature
         {
             get => _minimumTemperature;
             set
@@ -29,9 +27,21 @@ namespace WeatherApp.Core.ViewModels
 
                 _minimumTemperature = value;
                 RaisePropertyChanged(nameof(MaximumTemperature));
-                RaisePropertyChanged(nameof(DailyForecastLabel));
             }
         }
-        public string DailyForecastLabel => Convert.ToInt32(MaximumTemperature) + "/" + Convert.ToInt32(MinimumTemperature);
+        
+        private string _dayOfWeek;
+        public string DayOfWeek
+        {
+            get => _dayOfWeek;
+            set
+            {
+                if (_dayOfWeek == value)
+                    return;
+
+                _dayOfWeek = value;
+                RaisePropertyChanged(nameof(DayOfWeek));
+            }
+        }
     }
 }

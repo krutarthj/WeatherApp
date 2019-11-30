@@ -10,5 +10,6 @@ namespace WeatherApp.Core.Models
         public Clouds Clouds { get; set; }
         public Sys Sys { get; set; }
         public string Name { get; set; }
+        public int Timezone { get; set; }
     }
 }

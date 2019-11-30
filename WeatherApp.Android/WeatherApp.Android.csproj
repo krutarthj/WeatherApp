@@ -60,6 +60,7 @@
     <Reference Include="Mono.Android.Export" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fragments\BaseDialogFragment.cs" />
     <Compile Include="Fragments\MenuFragment.cs" />
     <Compile Include="LinkerPleaseInclude.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
@@ -70,7 +71,7 @@
     <Compile Include="Activities\SplashView.cs" />
     <Compile Include="Fragments\BaseFragment.cs" />
     <Compile Include="Fragments\HomeFragment.cs" />
-    <Compile Include="Fragments\DetailsFragment.cs" />
+    <Compile Include="Fragments\LocationsFragment.cs" />
     <Compile Include="Fragments\SettingsFragment.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -79,9 +80,12 @@
     <None Include="Assets\AboutAssets.txt" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\detailsView.axml" />
+    <AndroidResource Include="Resources\anim\slide_down.xml" />
+    <AndroidResource Include="Resources\anim\slide_up.xml" />
+    <AndroidResource Include="Resources\layout\locationsView.axml" />
     <AndroidResource Include="Resources\layout\homeView.axml" />
     <AndroidResource Include="Resources\layout\item_name.axml" />
+    <AndroidResource Include="Resources\layout\location_view.axml" />
     <AndroidResource Include="Resources\layout\settingsView.axml" />
     <AndroidResource Include="Resources\layout\toolbar.axml" />
     <AndroidResource Include="Resources\mipmap-anydpi-v26\bg_gradient.xml">
@@ -89,37 +93,289 @@
       <Generator>
       </Generator>
     </AndroidResource>
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\close.xml" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\crosshairs_gps.xml" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\gauge.xml" />
     <AndroidResource Include="Resources\mipmap-anydpi-v26\humidity.png" />
     <AndroidResource Include="Resources\mipmap-anydpi-v26\info.png" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\magnify.xml" />
     <AndroidResource Include="Resources\mipmap-anydpi-v26\pressure.png" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\settings.xml" />
     <AndroidResource Include="Resources\mipmap-anydpi-v26\sunrise.png" />
     <AndroidResource Include="Resources\mipmap-anydpi-v26\sunset.png" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\temperature_celsius.xml" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\temperature_fahrenheit.xml" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\water_percent.xml" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\weather_cloudy.xml" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\weather_sunset_down.xml" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\weather_sunset_up.xml" />
+    <AndroidResource Include="Resources\mipmap-anydpi-v26\weather_windy.xml" />
     <AndroidResource Include="Resources\mipmap-anydpi-v26\wind.png" />
     <AndroidResource Include="Resources\mipmap-hdpi\humidity.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_close_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_close_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_close_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_close_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_crosshairs_gps_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_crosshairs_gps_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_crosshairs_gps_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_crosshairs_gps_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_gauge_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_gauge_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_gauge_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_gauge_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_magnify_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_magnify_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_magnify_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_magnify_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_settings_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_settings_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_settings_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_settings_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_temperature_celsius_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_temperature_celsius_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_temperature_celsius_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_temperature_celsius_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_temperature_fahrenheit_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_temperature_fahrenheit_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_temperature_fahrenheit_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_temperature_fahrenheit_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_water_percent_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_water_percent_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_water_percent_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_water_percent_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_weather_cloudy_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_weather_cloudy_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_weather_cloudy_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_weather_cloudy_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_weather_sunset_down_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_weather_sunset_down_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_weather_sunset_down_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_weather_sunset_down_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_weather_sunset_up_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_weather_sunset_up_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_weather_sunset_up_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_weather_sunset_up_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_weather_windy_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_weather_windy_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_weather_windy_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_weather_windy_white_48dp.png" />
     <AndroidResource Include="Resources\mipmap-hdpi\info.png" />
     <AndroidResource Include="Resources\mipmap-hdpi\pressure.png" />
     <AndroidResource Include="Resources\mipmap-hdpi\sunrise.png" />
     <AndroidResource Include="Resources\mipmap-hdpi\sunset.png" />
     <AndroidResource Include="Resources\mipmap-hdpi\wind.png" />
     <AndroidResource Include="Resources\mipmap-mdpi\humidity.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_close_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_close_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_close_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_close_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_crosshairs_gps_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_crosshairs_gps_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_crosshairs_gps_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_crosshairs_gps_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_gauge_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_gauge_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_gauge_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_gauge_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_magnify_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_magnify_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_magnify_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_magnify_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_settings_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_settings_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_settings_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_settings_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_temperature_celsius_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_temperature_celsius_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_temperature_celsius_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_temperature_celsius_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_temperature_fahrenheit_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_temperature_fahrenheit_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_temperature_fahrenheit_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_temperature_fahrenheit_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_water_percent_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_water_percent_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_water_percent_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_water_percent_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_weather_cloudy_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_weather_cloudy_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_weather_cloudy_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_weather_cloudy_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_weather_sunset_down_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_weather_sunset_down_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_weather_sunset_down_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_weather_sunset_down_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_weather_sunset_up_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_weather_sunset_up_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_weather_sunset_up_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_weather_sunset_up_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_weather_windy_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_weather_windy_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_weather_windy_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_weather_windy_white_48dp.png" />
     <AndroidResource Include="Resources\mipmap-mdpi\info.png" />
     <AndroidResource Include="Resources\mipmap-mdpi\pressure.png" />
     <AndroidResource Include="Resources\mipmap-mdpi\sunrise.png" />
     <AndroidResource Include="Resources\mipmap-mdpi\sunset.png" />
     <AndroidResource Include="Resources\mipmap-mdpi\wind.png" />
     <AndroidResource Include="Resources\mipmap-xhdpi\humidity.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_close_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_close_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_close_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_close_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_crosshairs_gps_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_crosshairs_gps_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_crosshairs_gps_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_crosshairs_gps_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_gauge_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_gauge_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_gauge_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_gauge_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_magnify_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_magnify_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_magnify_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_magnify_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_settings_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_settings_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_settings_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_settings_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_temperature_celsius_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_temperature_celsius_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_temperature_celsius_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_temperature_celsius_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_temperature_fahrenheit_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_temperature_fahrenheit_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_temperature_fahrenheit_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_temperature_fahrenheit_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_water_percent_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_water_percent_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_water_percent_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_water_percent_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_weather_cloudy_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_weather_cloudy_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_weather_cloudy_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_weather_cloudy_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_weather_sunset_down_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_weather_sunset_down_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_weather_sunset_down_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_weather_sunset_down_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_weather_sunset_up_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_weather_sunset_up_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_weather_sunset_up_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_weather_sunset_up_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_weather_windy_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_weather_windy_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_weather_windy_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_weather_windy_white_48dp.png" />
     <AndroidResource Include="Resources\mipmap-xhdpi\info.png" />
     <AndroidResource Include="Resources\mipmap-xhdpi\pressure.png" />
     <AndroidResource Include="Resources\mipmap-xhdpi\sunrise.png" />
     <AndroidResource Include="Resources\mipmap-xhdpi\sunset.png" />
     <AndroidResource Include="Resources\mipmap-xhdpi\wind.png" />
     <AndroidResource Include="Resources\mipmap-xxhdpi\humidity.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_close_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_close_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_close_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_close_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_crosshairs_gps_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_crosshairs_gps_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_crosshairs_gps_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_crosshairs_gps_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_gauge_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_gauge_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_gauge_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_gauge_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_magnify_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_magnify_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_magnify_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_magnify_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_settings_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_settings_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_settings_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_settings_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_temperature_celsius_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_temperature_celsius_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_temperature_celsius_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_temperature_celsius_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_temperature_fahrenheit_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_temperature_fahrenheit_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_temperature_fahrenheit_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_temperature_fahrenheit_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_water_percent_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_water_percent_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_water_percent_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_water_percent_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_weather_cloudy_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_weather_cloudy_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_weather_cloudy_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_weather_cloudy_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_weather_sunset_down_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_weather_sunset_down_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_weather_sunset_down_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_weather_sunset_down_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_weather_sunset_up_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_weather_sunset_up_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_weather_sunset_up_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_weather_sunset_up_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_weather_windy_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_weather_windy_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_weather_windy_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_weather_windy_white_48dp.png" />
     <AndroidResource Include="Resources\mipmap-xxhdpi\info.png" />
     <AndroidResource Include="Resources\mipmap-xxhdpi\pressure.png" />
     <AndroidResource Include="Resources\mipmap-xxhdpi\sunrise.png" />
     <AndroidResource Include="Resources\mipmap-xxhdpi\sunset.png" />
     <AndroidResource Include="Resources\mipmap-xxhdpi\wind.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\humidity.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_close_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_close_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_close_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_close_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_crosshairs_gps_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_crosshairs_gps_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_crosshairs_gps_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_crosshairs_gps_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_gauge_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_gauge_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_gauge_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_gauge_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_magnify_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_magnify_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_magnify_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_magnify_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_settings_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_settings_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_settings_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_settings_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_temperature_celsius_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_temperature_celsius_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_temperature_celsius_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_temperature_celsius_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_temperature_fahrenheit_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_temperature_fahrenheit_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_temperature_fahrenheit_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_temperature_fahrenheit_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_water_percent_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_water_percent_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_water_percent_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_water_percent_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_weather_cloudy_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_weather_cloudy_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_weather_cloudy_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_weather_cloudy_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_weather_sunset_down_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_weather_sunset_down_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_weather_sunset_down_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_weather_sunset_down_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_weather_sunset_up_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_weather_sunset_up_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_weather_sunset_up_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_weather_sunset_up_white_48dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_weather_windy_white_18dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_weather_windy_white_24dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_weather_windy_white_36dp.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_weather_windy_white_48dp.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\info.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\pressure.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\sunrise.png" />
@@ -182,10 +438,15 @@
       <Version>7.0.35</Version>
     </PackageReference>
     <PackageReference Include="MvvmCross" Version="6.4.0" />
+    <PackageReference Include="MvvmCross.Plugin.Location.Fused">
+      <Version>6.4.1</Version>
+    </PackageReference>
+    <PackageReference Include="Xam.Plugin.Geolocator">
+      <Version>4.5.0.6</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Android.Support.Core.Utils" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Android.Support.CustomTabs" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Essentials" Version="1.3.1" />
     <PackageReference Include="Xamarin.Android.Support.v7.RecyclerView">
       <Version>28.0.0.3</Version>
     </PackageReference>
@@ -327,6 +588,12 @@
     <PackageReference Include="Xamarin.Android.Support.DocumentFile">
       <Version>28.0.0.3</Version>
     </PackageReference>
+    <PackageReference Include="Xamarin.Essentials">
+      <Version>1.3.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Numerics.Vectors">
+      <Version>4.5.0</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WeatherApp.Core\WeatherApp.Core.csproj">
@@ -335,7 +602,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources\Drawable" />
     <Folder Include="Resources\layout\" />
     <Folder Include="Resources\menu\" />
     <Folder Include="Activities\" />
