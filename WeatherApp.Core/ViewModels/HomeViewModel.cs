@@ -334,17 +334,12 @@ namespace WeatherApp.Core.ViewModels
             {
                 if (result.ErrorMessage != null)
                 {
-                    AlertConfig alertConfig = new AlertConfig
-                    {
-                        Title = "Error",
-                        Message = result.ErrorMessage
-                    };
-
-                    UserDialogs.Instance.Alert(alertConfig);
+                    await UserDialogs.Instance.AlertAsync(result.ErrorMessage);
                     IsRefreshing = false;
                     return;
                 }
-                
+
+                await UserDialogs.Instance.AlertAsync("Something went wrong. Please try again.");
                 IsRefreshing = false;
                 return;
             }

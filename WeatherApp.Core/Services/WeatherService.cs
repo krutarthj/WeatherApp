@@ -22,6 +22,7 @@ namespace WeatherApp.Core.Services
         {
             double? latitude = null;
             double? longitude = null;
+            
             if (string.IsNullOrWhiteSpace(cityName))
             {
                 var getLocation = await _locationService.GetCurrentLocationAsync();
@@ -34,7 +35,6 @@ namespace WeatherApp.Core.Services
                 latitude = getLocation.Value.Latitude;
                 longitude = getLocation.Value.Longitude;
             }
-            
 
             var currentWeather = await RetrieveCurrentWeatherAsync(isCelsius, cityName, latitude, longitude);
             var forecast = await RetrieveFiveDaysForecastsAsync(isCelsius, cityName, latitude, longitude);
@@ -45,6 +45,22 @@ namespace WeatherApp.Core.Services
             {
                 weatherAndForecast.CurrentWeather = currentWeather.Value;
                 weatherAndForecast.Forecast = forecast.Value;
+            }
+
+            if (currentWeather.ErrorMessage != null && forecast.ErrorMessage != null)
+            {
+                var errorMessage = currentWeather.ErrorMessage;
+                return new Result<CurrentWeatherWithForecast>(false, null, null, errorMessage);
+            }
+            if (currentWeather.ErrorMessage != null)
+            {
+                var errorMessage = currentWeather.ErrorMessage;
+                return new Result<CurrentWeatherWithForecast>(false, null, null, errorMessage);
+            }
+            if (forecast.ErrorMessage != null)
+            {
+                var errorMessage = forecast.ErrorMessage;
+                return new Result<CurrentWeatherWithForecast>(false, null, null, errorMessage);
             }
 
             return new Result<CurrentWeatherWithForecast>(true, weatherAndForecast, null, null);
@@ -73,11 +89,16 @@ namespace WeatherApp.Core.Services
             
             ApiResult<CurrentWeather> apiResult = await RequestManager.Instance.GetApiAsync<CurrentWeather>(url);
 
-            if (apiResult.SuccessResult != null)
+            if (apiResult != null)
             {
+                if (apiResult.SuccessResult == null)
+                {
+                    return new Result<CurrentWeather>(false, null, apiResult.ErrorResult?.Code, apiResult.ErrorResult?.Message);
+                }
+                
                 return new Result<CurrentWeather>(apiResult.IsSuccess, apiResult.SuccessResult, apiResult.ErrorResult?.Code, apiResult.ErrorResult?.Message);
             }
-            
+
             return new Result<CurrentWeather>();
         }
 
@@ -104,15 +125,20 @@ namespace WeatherApp.Core.Services
             
             ApiResult<Forecasts> apiResult = await RequestManager.Instance.GetApiAsync<Forecasts>(url);
 
-            if (apiResult.SuccessResult != null)
+            if (apiResult != null)
             {
+                if (apiResult.SuccessResult == null)
+                {
+                    return new Result<Forecasts>(false, null, apiResult.ErrorResult?.Code, apiResult.ErrorResult?.Message);
+                }
+
                 Dictionary<DateTime, List<Forecast>> fiveDayThreeHourForecastDic = new Dictionary<DateTime, List<Forecast>>(5);
                 foreach (var forecast in apiResult.SuccessResult.ForecastList)
                 {
                     DateTime dateAndTime = DateTime.Parse(forecast.Date);
 
                     var date = dateAndTime.Date;
-                    
+                        
                     if (fiveDayThreeHourForecastDic.TryGetValue(date, out var forecasts))
                     {
                         fiveDayThreeHourForecastDic[date].Add(forecast);
@@ -132,7 +158,7 @@ namespace WeatherApp.Core.Services
 
                     double tempMin = 1000;
                     double tempMax = -1000;
-                    
+                        
                     foreach (var forecast in forecasts)
                     {
                         var forecastTempMin = forecast.Main.TempMin;
@@ -159,13 +185,13 @@ namespace WeatherApp.Core.Services
                         Date = key.DayOfWeek.ToString(), 
                         Weather = null
                     };
-                    
+                        
                     fiveDayForecasts.Add(key, newForecast);
                 }
 
                 Forecasts newForecasts = new Forecasts();
                 List<Forecast> newForecastList = new List<Forecast>();
-                
+                    
                 foreach (var key in fiveDayForecasts.Keys)
                 {
                     newForecastList.Add(fiveDayForecasts[key]);
@@ -175,14 +201,14 @@ namespace WeatherApp.Core.Services
                 {
                     newForecastList.RemoveAt(0);
                 }
-                
+                    
                 newForecasts.ForecastList = newForecastList;
-                
+                    
                 apiResult.SuccessResult = newForecasts;
 
                 return new Result<Forecasts>(apiResult.IsSuccess, apiResult.SuccessResult, apiResult.ErrorResult?.Code, apiResult.ErrorResult?.Message);
             }
-            
+
             return new Result<Forecasts>();
         }
     }

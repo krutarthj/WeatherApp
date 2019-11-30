@@ -13138,10 +13138,10 @@ namespace WeatherApp.Android
 			public const int design_text_input_password_icon = 2131427371;
 			
 			// aapt resource value: 0x7F0B002C
-			public const int homeView = 2131427372;
+			public const int forecast_info = 2131427372;
 			
 			// aapt resource value: 0x7F0B002D
-			public const int item_name = 2131427373;
+			public const int homeView = 2131427373;
 			
 			// aapt resource value: 0x7F0B002E
 			public const int loading = 2131427374;
